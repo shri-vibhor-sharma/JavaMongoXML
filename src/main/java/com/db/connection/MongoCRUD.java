@@ -6,13 +6,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.WriteResult;
 
 public class MongoCRUD {
 
-	public static void main(String[] args) {
+	public static void main (String args[]) {
 		try {
 
 			MongoClient mongo = getConnection();
@@ -35,6 +36,37 @@ public class MongoCRUD {
 		} catch (MongoException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public String fetchMongoData(String key) {
+		DBObject result = null ;
+		if (key != null) {
+			try {
+
+				MongoClient mongo = getConnection();
+				if (mongo != null) {
+					System.out.println("Connected to the DB yiee!!");
+					DB db = mongo.getDB("mycustomers");
+					DBCollection table = db.getCollection("customers");
+					/* Create a search Query and search for a document with a key */
+					BasicDBObject searchQuery = new BasicDBObject();
+					searchQuery.put("first_name", key);
+					/* Create a DBCursor to loop thru the resultset and print it out */
+					DBCursor cursor = table.find(searchQuery);
+					while (cursor.hasNext()) {
+						
+						result= cursor.next();
+					}
+					System.out.println(result.toString());
+					
+					
+				}
+			} catch (MongoException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return result.toString() ; 
 	}
 
 	public static MongoClient getConnection() {
